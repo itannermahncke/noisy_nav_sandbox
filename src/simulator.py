@@ -7,7 +7,6 @@ from robot import Robot
 from utils import Pose, Position, Bounds, Landmark
 import csv
 import pandas as pd
-from decimal import Decimal
 
 if __name__ == "__main__":
     # set up the sim
