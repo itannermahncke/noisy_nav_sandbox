@@ -50,7 +50,7 @@ if __name__ == "__main__":
         # hit it!
         for step in range(int(total_timesteps) + 1):
             # first, sample the environment
-            print(f"\n***TIMESTEP T{env.time}***")
+            # print(f"\n***TIMESTEP T{env.time}***")
             ground_truth_history = pd.concat(
                 [
                     ground_truth_history,

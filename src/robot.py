@@ -102,7 +102,7 @@ class Robot:
         # query all sensors -- won't have all columns every time
         for s in self.sensors.values():
             if floating_mod_zero(self.env.time, s.interval):
-                print(f"--> Collecting from {s.name}")
+                # print(f"--> Collecting from {s.name}")
                 measurements = pd.merge(
                     measurements,
                     s.sample(),
