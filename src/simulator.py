@@ -7,6 +7,7 @@ from robot import Robot
 from utils import Pose, Position, Bounds, Landmark
 import csv
 import pandas as pd
+import pickle
 
 if __name__ == "__main__":
     # set up the sim
@@ -81,4 +82,7 @@ if __name__ == "__main__":
 
         # log the results
         ground_truth_history.to_csv("./logs/groundtruth_log.csv")
+        pickle.dump(ground_truth_history, open("./logs/groundtruth_logs.pkl", "wb"))
+
         sensor_data_history.to_csv("./logs/sensor_log.csv")
+        pickle.dump(sensor_data_history, open("./logs/sensor_logs.pkl", "wb"))
