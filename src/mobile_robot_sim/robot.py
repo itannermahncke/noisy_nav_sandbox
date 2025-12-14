@@ -1,8 +1,8 @@
 """ """
 
-from .utils import NEAR_ZERO, floating_mod_zero
-from .environment import Environment
-from .sensors import SensorInterface, LandmarkPinger, GPS, Odometry
+from utils import NEAR_ZERO, floating_mod_zero
+from environment import Environment
+from sensors import SensorInterface, LandmarkPinger, GPS, Odometry
 
 import math
 import random
@@ -102,7 +102,7 @@ class Robot:
         # query all sensors -- won't have all columns every time
         for s in self.sensors.values():
             if floating_mod_zero(self.env.time, s.interval):
-                print(f"--> Collecting from {s.name}")
+                # print(f"--> Collecting from {s.name}")
                 measurements = pd.merge(
                     measurements,
                     s.sample(),
@@ -132,3 +132,88 @@ class Robot:
         # print(env_data.columns)
         # print(env_data.values)
         return env_data
+
+    def info(self) -> pd.DataFrame:
+        """
+        Return a dictionary of frozen environment information.
+        """
+        # set up the table
+        columns = ["Sensor Name", "Constant Noise", "Proportional Noise"]
+        data = []
+
+        # start with controller
+        name = "MotorController"
+        # linear
+        lin_row = pd.DataFrame(
+            0,
+            index=pd.RangeIndex(1),
+            columns=columns,
+        )
+        lin_row["Sensor Name"] = name + f"Linear"
+        lin_row["Constant Noise"] = self.EXECUTION_NOISE_LINEAR
+        data.append(lin_row)
+        # angular
+        ang_row = pd.DataFrame(
+            0,
+            index=pd.RangeIndex(1),
+            columns=columns,
+        )
+        ang_row["Sensor Name"] = name + f"Angular"
+        ang_row["Constant Noise"] = self.EXECUTION_NOISE_ANGULAR
+        data.append(ang_row)
+        # iterate through sensors
+        for name, sensor in self.sensors.items():
+            # GPS is very simple: 1 axis of constant noise
+            if isinstance(sensor, GPS):
+                row = pd.DataFrame(
+                    0,
+                    index=pd.RangeIndex(1),
+                    columns=columns,
+                )
+                row["Sensor Name"] = name
+                row["Constant Noise"] = sensor.GPS_NOISE
+                data.append(row)
+            # odom has linear and angular components to consider
+            elif isinstance(sensor, Odometry):
+                # linear
+                lin_row = pd.DataFrame(
+                    0,
+                    index=pd.RangeIndex(1),
+                    columns=columns,
+                )
+                lin_row["Sensor Name"] = name + f"Linear"
+                lin_row["Proportional Noise"] = sensor.LINEAR_NOISE_RATIO
+                data.append(lin_row)
+                # angular
+                ang_row = pd.DataFrame(
+                    0,
+                    index=pd.RangeIndex(1),
+                    columns=columns,
+                )
+                ang_row["Sensor Name"] = name + f"Angular"
+                ang_row["Proportional Noise"] = sensor.ANGULAR_NOISE_RATIO
+                data.append(ang_row)
+            # pinger has independent range and bearing
+            elif isinstance(sensor, LandmarkPinger):
+                # linear
+                range_row = pd.DataFrame(
+                    0,
+                    index=pd.RangeIndex(1),
+                    columns=columns,
+                )
+                range_row["Sensor Name"] = name + f"Range"
+                range_row["Constant Noise"] = sensor.RANGE_PROP_NOISE
+                range_row["Proportional Noise"] = sensor.RANGE_PROP_NOISE
+                data.append(range_row)
+                # angular
+                bearing_row = pd.DataFrame(
+                    0,
+                    index=pd.RangeIndex(1),
+                    columns=columns,
+                )
+                bearing_row["Sensor Name"] = name + f"Angular"
+                bearing_row["Constant Noise"] = sensor.BEARING_NOISE
+                data.append(bearing_row)
+
+        # return
+        return pd.concat(data)

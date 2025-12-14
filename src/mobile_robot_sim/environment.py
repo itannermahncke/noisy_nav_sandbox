@@ -2,7 +2,7 @@
 A simulation environment for a mobile robot operating in two dimensions.
 """
 
-from .utils import Position, Pose, BearingRange, Bounds, Landmark
+from utils import Position, Pose, BearingRange, Bounds, Landmark
 import pandas as pd
 import math
 
@@ -172,7 +172,7 @@ class Environment:
         return lms
 
     # --- Logging ---
-    def info(self):
+    def info(self) -> dict:
         """
         Return a dictionary of frozen environment information.
         """

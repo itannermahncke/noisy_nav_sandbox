@@ -2,11 +2,12 @@
 Main file for running the simulator.
 """
 
-from .environment import Environment
-from .robot import Robot
-from .utils import Pose, Position, Bounds, Landmark
+from environment import Environment
+from robot import Robot
+from utils import Pose, Position, Bounds, Landmark
 import csv
 import pandas as pd
+import pickle
 
 if __name__ == "__main__":
     # set up the sim
@@ -30,7 +31,7 @@ if __name__ == "__main__":
     robot = Robot(env)
 
     # set up timekeeping
-    total_seconds = 120.0
+    total_seconds = 100
     total_timesteps = total_seconds / env.DT
     terminal = False
 
@@ -50,7 +51,7 @@ if __name__ == "__main__":
         # hit it!
         for step in range(int(total_timesteps) + 1):
             # first, sample the environment
-            print(f"\n***TIMESTEP T{env.time}***")
+            # print(f"\n***TIMESTEP T{env.time}***")
             ground_truth_history = pd.concat(
                 [
                     ground_truth_history,
@@ -82,3 +83,9 @@ if __name__ == "__main__":
         # log the results
         ground_truth_history.to_csv("./logs/groundtruth_log.csv")
         sensor_data_history.to_csv("./logs/sensor_log.csv")
+        pickle.dump(ground_truth_history, open("./logs/groundtruth_log.pkl", "wb"))
+        pickle.dump(sensor_data_history, open("./logs/sensor_log.pkl", "wb"))
+        pickle.dump(env.info(), open("./logs/env_info.pkl", "wb"))
+        pickle.dump(robot.info(), open("./logs/sensor_info.pkl", "wb"))
+        robot.info().to_csv("./logs/sensor_info.csv")
+        print(robot.info())
