@@ -1,6 +1,6 @@
 """ """
 
-from utils import NEAR_ZERO, floating_mod_zero
+from utils import NEAR_ZERO, floating_mod_zero, SEED
 from environment import Environment
 from sensors import SensorInterface, LandmarkPinger, GPS, Odometry
 
@@ -182,6 +182,7 @@ class Robot:
                     columns=columns,
                 )
                 lin_row["Sensor Name"] = name + f"Linear"
+                lin_row["Constant Noise"] = sensor.LIN_NOISE
                 lin_row["Proportional Noise"] = sensor.LINEAR_NOISE_RATIO
                 data.append(lin_row)
                 # angular
@@ -191,6 +192,7 @@ class Robot:
                     columns=columns,
                 )
                 ang_row["Sensor Name"] = name + f"Angular"
+                lin_row["Constant Noise"] = sensor.ANG_NOISE
                 ang_row["Proportional Noise"] = sensor.ANGULAR_NOISE_RATIO
                 data.append(ang_row)
             # pinger has independent range and bearing

@@ -3,7 +3,7 @@ Contains the abstract base class for sensor classes to inherit from, plus all im
 """
 
 # from robot import Robot
-from utils import BearingRange, Position
+from utils import BearingRange, Position, SEED
 import pandas as pd
 from abc import ABC, abstractmethod
 import math
@@ -198,8 +198,10 @@ class Odometry(SensorInterface):
         robot,
         name: str = "Odometry",
         interval: float = 0.1,
+        lin_noise: float = 0.05,
+        ang_noise: float = 0.01,
         linear_noise_ratio: float = 0.10,
-        angular_noise_ratio: float = 0.20,
+        angular_noise_ratio: float = 0.50,
     ):
         """
         Initialize an instance of the Odometry class.
@@ -212,6 +214,8 @@ class Odometry(SensorInterface):
             angular_noise_ratio (float): proportional noise for angular
         """
         super().__init__(name, robot, interval)
+        self.LIN_NOISE = lin_noise
+        self.ANG_NOISE = ang_noise
         self.LINEAR_NOISE_RATIO = linear_noise_ratio
         self.ANGULAR_NOISE_RATIO = angular_noise_ratio
 
@@ -228,10 +232,10 @@ class Odometry(SensorInterface):
 
         # Add proportional noise
         noisy_lin_vel = random.gauss(
-            true_lin_vel, abs(true_lin_vel) * self.LINEAR_NOISE_RATIO
+            true_lin_vel, self.LIN_NOISE + abs(true_lin_vel) * self.LINEAR_NOISE_RATIO
         )
         noisy_ang_vel = random.gauss(
-            true_ang_vel, abs(true_ang_vel) * self.ANGULAR_NOISE_RATIO
+            true_ang_vel, self.ANG_NOISE + abs(true_ang_vel) * self.ANGULAR_NOISE_RATIO
         )
 
         return pd.DataFrame(

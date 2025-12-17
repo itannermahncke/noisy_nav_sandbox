@@ -5,6 +5,7 @@ Main file for running the simulator.
 from environment import Environment
 from robot import Robot
 from utils import Pose, Position, Bounds, Landmark
+from viz import Visualizer
 import csv
 import pandas as pd
 import pickle
@@ -12,32 +13,38 @@ import pickle
 if __name__ == "__main__":
     # set up the sim
     env = Environment(
-        dimensions=Bounds(0, 30, 0, 40),
+        dimensions=Bounds(0, 50, 0, 40),
         agent_pose=Pose(Position(0, 0), 0),
         obstacles=[
-            Bounds(0, 5, 25, 30),
+            # Bounds(0, 5, 25, 30),
             # Bounds(5, 10, 10, 15),
-            Bounds(20, 25, 5, 15),
+            # Bounds(20, 25, 5, 15),
         ],
         landmarks=[
-            Landmark(Position(5, 5), 0),
-            Landmark(Position(20, 5), 1),
-            Landmark(Position(10, 15), 2),
-            Landmark(Position(15, 30), 3),
-            Landmark(Position(25, 25), 4),
+            Landmark(Position(10, 10), 0),
+            Landmark(Position(10, 40), 1),
+            Landmark(Position(20, 0), 2),
+            Landmark(Position(20, 20), 3),
+            Landmark(Position(30, 10), 4),
+            Landmark(Position(30, 20), 5),
+            Landmark(Position(20, 30), 6),
+            Landmark(Position(40, 30), 7),
+            Landmark(Position(50, 10), 8),
+            Landmark(Position(50, 20), 9),
         ],
         timestep=0.1,
     )
     robot = Robot(env)
 
     # set up timekeeping
-    total_seconds = 120
+    total_seconds = 170
     total_timesteps = total_seconds / env.DT
     terminal = False
 
     # set up logging
     ground_truth_history = pd.DataFrame()
     sensor_data_history = pd.DataFrame()
+    VIZ = True
 
     # open up the instructions, pop the first
     with open("./cmds/vel_cmd_example.csv", "r") as cmd:
@@ -89,3 +96,28 @@ if __name__ == "__main__":
         pickle.dump(robot.info(), open("./logs/sensor_info.pkl", "wb"))
         # robot.info().to_csv("./logs/sensor_info.csv")
         # print(robot.info())
+
+    if VIZ:
+        # grab all the data
+        DATA_PATH = "./logs/"
+        gt_log_path = DATA_PATH + "groundtruth_log.pkl"
+        sensor_log_path = DATA_PATH + "sensor_log.pkl"
+        env_info_path = DATA_PATH + "env_info.pkl"
+        sensor_info_path = DATA_PATH + "sensor_info.pkl"
+        with open(sensor_log_path, "rb") as f:
+            sensor_log = pickle.load(f)
+        with open(gt_log_path, "rb") as f:
+            gt_log = pickle.load(f)
+        # unpack into dataframes
+        with open(env_info_path, "rb") as f:
+            env_info = pickle.load(f)
+        with open(sensor_info_path, "rb") as f:
+            sensor_info = pickle.load(f)
+
+        # make visuals
+        viz = Visualizer(
+            env_info,
+            gt_log,
+            sensor_log,
+        )
+        viz.draw_all()

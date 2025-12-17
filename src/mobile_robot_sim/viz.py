@@ -36,8 +36,8 @@ class Visualizer:
 
         # Set up the plot boundaries
         dims = self.env_info["Dimensions"]
-        ax.set_xlim(dims["x_min"] - 1, dims["x_max"] + 5)
-        ax.set_ylim(dims["y_min"] - 1, dims["y_max"] + 5)
+        ax.set_xlim(dims["x_min"] - 1, dims["x_max"] + 1)
+        ax.set_ylim(dims["y_min"] - 1, dims["y_max"] + 1)
         ax.set_aspect("equal")
         ax.grid(True, alpha=0.3)
 
@@ -263,6 +263,31 @@ class Visualizer:
         ax.legend()
         return ax
 
+    def draw_all(self):
+        """
+        Docstring for draw_all
+
+        :param self: Description
+        """
+        self.plot_env()
+        self.plot_single_trajectory(
+            "Ground Truth",
+            self.poses_from_gt(),
+            "green",
+        )
+        self.plot_single_trajectory(
+            "Dead Reckoning",
+            self.poses_from_odom(),
+            "red",
+        )
+        self.plot_single_trajectory(
+            "GPS Only",
+            self.poses_from_gps(),
+            "orange",
+        )
+        plt.savefig("./logs/dataset_viz.png")
+        plt.show()
+
 
 if __name__ == "__main__":
     # grab all the data
@@ -287,21 +312,4 @@ if __name__ == "__main__":
         gt_log,
         sensor_log,
     )
-    viz.plot_env()
-    viz.plot_single_trajectory(
-        "Ground Truth",
-        viz.poses_from_gt(),
-        "green",
-    )
-    viz.plot_single_trajectory(
-        "Dead Reckoning",
-        viz.poses_from_odom(),
-        "red",
-    )
-    viz.plot_single_trajectory(
-        "GPS Only",
-        viz.poses_from_gps(),
-        "orange",
-    )
-    # plt.savefig("./results/trajectory_comparison.png")
-    plt.show()
+    viz.draw_all()
