@@ -91,7 +91,7 @@ class GPS(SensorInterface):
         robot,
         name: str = "GPS",
         interval: float = 2.0,
-        noise: float = 0.5,
+        noise: float = 1.0,
     ):
         """
         Initialize an instance of the GPS class.
@@ -146,7 +146,7 @@ class LandmarkPinger(SensorInterface):
         """
         super().__init__(name, robot, interval)
         self.MAX_RANGE = 10.0  # meters
-        self.RANGE_NOISE = 0.2  # meters
+        self.RANGE_NOISE = 0.1  # meters
         self.RANGE_PROP_NOISE = 0.02  # meters
         self.BEARING_NOISE = 0.0872665  # radians
 
@@ -198,8 +198,8 @@ class Odometry(SensorInterface):
         robot,
         name: str = "Odometry",
         interval: float = 0.1,
-        linear_noise_ratio: float = 0.05,
-        angular_noise_ratio: float = 0.10,
+        linear_noise_ratio: float = 0.10,
+        angular_noise_ratio: float = 0.20,
     ):
         """
         Initialize an instance of the Odometry class.

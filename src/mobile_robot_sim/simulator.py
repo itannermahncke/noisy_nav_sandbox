@@ -12,11 +12,11 @@ import pickle
 if __name__ == "__main__":
     # set up the sim
     env = Environment(
-        dimensions=Bounds(0, 30, 0, 30),
+        dimensions=Bounds(0, 30, 0, 40),
         agent_pose=Pose(Position(0, 0), 0),
         obstacles=[
             Bounds(0, 5, 25, 30),
-            Bounds(5, 10, 10, 15),
+            # Bounds(5, 10, 10, 15),
             Bounds(20, 25, 5, 15),
         ],
         landmarks=[
@@ -24,14 +24,14 @@ if __name__ == "__main__":
             Landmark(Position(20, 5), 1),
             Landmark(Position(10, 15), 2),
             Landmark(Position(15, 30), 3),
-            # Landmark(Position(25, 25), 4),
+            Landmark(Position(25, 25), 4),
         ],
         timestep=0.1,
     )
     robot = Robot(env)
 
     # set up timekeeping
-    total_seconds = 100
+    total_seconds = 120
     total_timesteps = total_seconds / env.DT
     terminal = False
 
@@ -81,11 +81,11 @@ if __name__ == "__main__":
             robot.agent_step_differential(current_lin_vel, current_ang_vel)
 
         # log the results
-        ground_truth_history.to_csv("./logs/groundtruth_log.csv")
-        sensor_data_history.to_csv("./logs/sensor_log.csv")
+        # ground_truth_history.to_csv("./logs/groundtruth_log.csv")
+        # sensor_data_history.to_csv("./logs/sensor_log.csv")
         pickle.dump(ground_truth_history, open("./logs/groundtruth_log.pkl", "wb"))
         pickle.dump(sensor_data_history, open("./logs/sensor_log.pkl", "wb"))
         pickle.dump(env.info(), open("./logs/env_info.pkl", "wb"))
         pickle.dump(robot.info(), open("./logs/sensor_info.pkl", "wb"))
-        robot.info().to_csv("./logs/sensor_info.csv")
-        print(robot.info())
+        # robot.info().to_csv("./logs/sensor_info.csv")
+        # print(robot.info())
